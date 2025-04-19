@@ -41,7 +41,29 @@ func logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		err := http.StatusMethodNotAllowed
+		http.Error(w, "Invalid method", err)
+		return
+	}
+	var user UserCredential
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		err := http.StatusBadRequest
+		http.Error(w, "Something went wrong", err)
+		return
+	}
+	u, ok := users[user.Username]
+	if !ok || !utils.CheckPasswordHash(user.Password, u.HashedPassword) {
+		err := http.StatusUnauthorized
+		http.Error(w, "Invalid username and password", err)
+		return
+	}
 
+	_, err = fmt.Fprintln(w, "Login successfully!")
+	if err != nil {
+		return
+	}
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
