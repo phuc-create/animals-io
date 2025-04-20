@@ -1,4 +1,4 @@
 run:
-	go run ./cmd/main.go
+	go run ./cmd/animals-io/main.go
 migrate-db:
 	go run ./db/migrate.go
